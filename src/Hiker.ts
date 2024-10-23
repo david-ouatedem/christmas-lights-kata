@@ -20,12 +20,14 @@ export type ParsedCommand = {
   y2: number;
 };
 
+export type BaseGridState = 0 | 1;
+
 export class Hiker {
   private gridSize: number = 1000;
 
-  public generateGrid(baseState?: boolean) {
-    const grid: boolean[][] = Array.from({ length: this.gridSize }, () =>
-      Array(this.gridSize).fill(baseState ?? false)
+  public generateGrid(baseState?: BaseGridState) {
+    const grid: number[][] = Array.from({ length: this.gridSize }, () =>
+      Array(this.gridSize).fill(baseState ?? 0)
     );
     return grid;
   }
@@ -49,34 +51,38 @@ export class Hiker {
     };
   }
 
-  public applyCommand(grid: boolean[][], command: string) {
+  public applyCommand(grid: number[][], command: string) {
     const { action, x1, x2, y1, y2 } = this.parseCommand(command);
     for (let x = x1; x <= x2; x++) {
       for (let y = y1; y <= y2; y++) {
         if (action === "turn on") {
-          grid[x][y] = true;
+          grid[x][y] = 1;
         } else if (action === "turn off") {
-          grid[x][y] = false;
+          grid[x][y] = 0;
         } else if (action === "toggle") {
-          grid[x][y] = !grid[x][y];
+          grid[x][y] = 2;
         }
       }
     }
   }
 
-  public countOnLight(grid: boolean[][]): number {
+  public countOnLight(grid: number[][]): number {
     let count: number = 0;
 
     for (let x = 0; x < this.gridSize; x++) {
       for (let y = 0; y < this.gridSize; y++) {
-        if (grid[x][y]) count++;
+        if (grid[x][y] === 1) {
+          count++;
+        } else if (grid[x][y] === 2) {
+          count += 2;
+        }
       }
     }
-    return count;
+    return count < 0 ? 0 : count;
   }
 
-  public processCommands(commands: string[], baseGridState?: boolean) {
-    const grid = this.generateGrid(baseGridState ?? false);
+  public processCommands(commands: string[], baseGridState?: BaseGridState) {
+    const grid = this.generateGrid(baseGridState ?? 0);
 
     for (let command of commands) {
       this.applyCommand(grid, command);

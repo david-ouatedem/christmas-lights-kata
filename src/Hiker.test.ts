@@ -23,7 +23,7 @@ describe("Hiker", () => {
     const grid = hiker.generateGrid();
 
     const offLights = grid.map((row) =>
-      row.filter((value) => value === false)
+      row.filter((value) => value === 0)
     ).length;
 
     // Assert
@@ -81,13 +81,13 @@ describe("Hiker", () => {
     const onLights = hiker.countOnLight(grid);
 
     // Assert
-    expect(onLights).toBe(34558);
+    expect(onLights).toBe(69116);
   });
   it("can correctly apply turn turn off command", () => {
     // Arrange
     const hiker = new Hiker();
     const command = "turn off 539,243 through 559,965";
-    const grid = hiker.generateGrid(true);
+    const grid = hiker.generateGrid(1);
 
     // Act
     hiker.applyCommand(grid, command);
@@ -103,6 +103,32 @@ describe("Hiker", () => {
     const onLights = hiker.processCommands(instructions);
 
     // Assert
-    expect(onLights).toBe(230022);
+    expect(onLights).toBe(426321);
+  });
+  it("can correctly apply turn on command and return the total brightness", () => {
+    // Arrange
+    const hiker = new Hiker();
+    const command = "turn on 0,0 through 0,0";
+    const grid = hiker.generateGrid();
+
+    // Act
+    hiker.applyCommand(grid, command);
+    const onLights = hiker.countOnLight(grid);
+
+    // Assert
+    expect(onLights).toBe(1);
+  });
+  it("can correctly apply toggle command and return the total brightness", () => {
+    // Arrange
+    const hiker = new Hiker();
+    const command = "toggle 0,0 through 999,999";
+    const grid = hiker.generateGrid();
+
+    // Act
+    hiker.applyCommand(grid, command);
+    const onLights = hiker.countOnLight(grid);
+
+    // Assert
+    expect(onLights).toBe(2000000);
   });
 });
