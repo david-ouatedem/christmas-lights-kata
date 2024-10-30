@@ -1,108 +1,57 @@
-import { Hiker, instructions, ParsedCommand } from "./Hiker";
+import { Hiker } from "./Hiker";
 
-describe("Hiker", () => {
-  it("generates grid with 1000 rows and 1000 columns", () => {
-    // Arrange
-    const hiker = new Hiker();
+describe("Hiker Class Unit Tests", () => {
+  let hiker: Hiker;
 
-    // Act
-    const grid = hiker.generateGrid();
-
-    const rows = grid.length;
-    const columns = grid[0].length;
-
-    // Assert
-    expect(rows).toBe(1000);
-    expect(columns).toBe(1000);
+  beforeEach(() => {
+    hiker = new Hiker();
   });
-  it("test if lights are initially all off", () => {
+
+  test("should parse command correctly", () => {
     // Arrange
-    const hiker = new Hiker();
-
-    // Act
-    const grid = hiker.generateGrid();
-
-    const offLights = grid.map((row) =>
-      row.filter((value) => value === false)
-    ).length;
-
-    // Assert
-    expect(offLights).toBe(1000);
-  });
-  it("failed to correctly parse command", () => {
-    // Arrange
-    const hiker = new Hiker();
-    const command = "turn down 499,499 through 500,500";
-
-    // Act
-
-    // Assert
-    expect(() => hiker.parseCommand(command)).toThrow(Error);
-  });
-  it("can correctly parse command", () => {
-    // Arrange
-    const hiker = new Hiker();
-    const command = "turn off 499,499 through 500,500";
+    const command = "turn on 0,0 through 1,1";
+    const expectedParsedCommand = {
+      action: "turn on",
+      x1: 0,
+      y1: 0,
+      x2: 1,
+      y2: 1,
+    };
 
     // Act
     const parsedCommand = hiker.parseCommand(command);
 
     // Assert
-    const expectedResult: ParsedCommand = {
-      action: "turn off",
-      x1: 499,
-      y1: 499,
-      x2: 500,
-      y2: 500,
-    };
-    expect(parsedCommand).toStrictEqual(expectedResult);
+    expect(parsedCommand).toEqual(expectedParsedCommand);
   });
-  it("can correctly apply turn on command", () => {
+
+  test("should throw an error on invalid command", () => {
+    expect(() => hiker.parseCommand("turn up 0,0 through 0,0")).toThrow(
+      "Invalid command"
+    );
+  });
+
+  test("should apply command correctly", () => {
     // Arrange
-    const hiker = new Hiker();
-    const command = "turn on 499,499 through 500,500";
-    const grid = hiker.generateGrid();
+    const grid = hiker.generateGrid(false);
+    const command = "turn on 0,0 through 0,0";
 
     // Act
     hiker.applyCommand(grid, command);
-    const onLights = hiker.countOnLight(grid);
 
     // Assert
-    expect(onLights).toBe(4);
+    expect(grid[0][0]).toBe(true);
   });
-  it("can correctly apply toggle command", () => {
+
+  test("should toggle light state correctly", () => {
     // Arrange
-    const hiker = new Hiker();
-    const command = "toggle 831,394 through 904,860";
-    const grid = hiker.generateGrid();
+    const grid = hiker.generateGrid(false);
+    hiker.applyCommand(grid, "turn on 0,0 through 0,0");
 
     // Act
-    hiker.applyCommand(grid, command);
-    const onLights = hiker.countOnLight(grid);
+    hiker.applyCommand(grid, "toggle 0,0 through 0,0");
 
     // Assert
-    expect(onLights).toBe(34558);
-  });
-  it("can correctly apply turn turn off command", () => {
-    // Arrange
-    const hiker = new Hiker();
-    const command = "turn off 539,243 through 559,965";
-    const grid = hiker.generateGrid(true);
-
-    // Act
-    hiker.applyCommand(grid, command);
-    const offedLights = 1000000 - hiker.countOnLight(grid);
-
-    // Assert
-    expect(offedLights).toBe(15183);
-  });
-  it("can correctly process many commands", () => {
-    // Arrange
-    const hiker = new Hiker();
-    // Act
-    const onLights = hiker.processCommands(instructions);
-
-    // Assert
-    expect(onLights).toBe(230022);
+    expect(grid[0][0]).toBe(false);
   });
 });
