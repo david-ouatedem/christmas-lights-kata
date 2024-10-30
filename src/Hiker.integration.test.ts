@@ -8,15 +8,23 @@ describe("Hiker Class Integration Tests", () => {
   });
 
   test("should process a sequence of commands correctly", () => {
-    const finalCount = hiker.processCommands(instructions);
+    // Arrange
+    const commands = instructions;
+    // Act
+    const finalCount = hiker.processCommands(commands);
+    // Assert
     expect(finalCount).toBe(426321);
   });
 
   test("should handle commands at the grid boundaries", () => {
+    // Arrange
     const commands = [
       "turn on 999,999 through 999,999",
       "turn off 999,999 through 999,999",
     ];
-    expect(hiker.processCommands(commands)).toBe(0);
+    // Act
+    const finalCount = hiker.processCommands(commands);
+    // Assert
+    expect(finalCount).toBe(0);
   });
 });
